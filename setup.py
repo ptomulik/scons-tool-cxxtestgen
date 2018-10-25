@@ -15,8 +15,8 @@ else:
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-readme_py = os.path.join(here, 'README.rst')
-with uopen(readme_py, encoding='utf-8') as f:
+readme_rst = os.path.join(here, 'README.rst')
+with uopen(readme_rst, encoding='utf-8') as f:
     readme = f.read()
 
 about = {}
