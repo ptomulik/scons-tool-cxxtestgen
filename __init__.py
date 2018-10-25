@@ -132,7 +132,21 @@ def _has_py3_impl(script):
 def _shall_work_on_py3(cxxtestgen):
     return not _has_issue_135(cxxtestgen) and _has_py3_impl(cxxtestgen)
 
+
+def createCxxTestGenBuilder(env):
+    try:
+        builder = env['BUILDERS']['CxxTestGen']
+    except KeyError:
+        builder = Builder(action='$CXXTESTGENCOM',
+                          suffix='$CXXTESTGENSUFFIX',
+                          src_suffix='$CXXTESTGENSRCSUFFIX')
+        env['BUILDERS']['CxxTestGen'] = builder
+    return builder
+
+
 def generate(env):
+    createCxxTestGenBuilder(env)
+
     cxxtestgen = _cxxtestgen(env)
 
     if cxxtestgen:
@@ -150,9 +164,7 @@ def generate(env):
     env.SetDefault(CXXTESTGENSUFFIX='.t.cpp')
     env.SetDefault(CXXTESTGENSRCSUFFIX='.t.h')
     env['CXXTESTGENCOM'] = '$CXXTESTGENPYTHON $CXXTESTGEN --runner=$CXXTESTGENRUNNER $CXXTESTGENFLAGS -o $TARGET $SOURCE'
-    env['BUILDERS']['CxxTestGen'] = Builder(action='$CXXTESTGENCOM',
-                                            suffix='$CXXTESTGENSUFFIX',
-                                            src_suffix='$CXXTESTGENSRCSUFFIX')
+
 
 def exists(env):
     return env.Detect(env.get('CXXTESTGEN', _cxxtestgen(env)))

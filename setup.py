@@ -63,7 +63,9 @@ setup(
         url='https://github.com/ptomulik/scons-tool-cxxtestgen',
         author='Paweł Tomulik',
         author_email='ptomulik@meil.pw.edu.pl',
-        cmdclass={'develop': develop, 'install': install}
+        cmdclass={'develop': develop, 'install': install},
+        install_requires=['scons-tool-util >= 0.1.6'],
+        python_requires=">=2.7"
 )
 
 # vim: set expandtab tabstop=4 shiftwidth=4:
