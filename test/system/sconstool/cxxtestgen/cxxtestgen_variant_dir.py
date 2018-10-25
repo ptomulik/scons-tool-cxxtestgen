@@ -40,6 +40,7 @@ except OSError:
     pass
 
 test.file_fixture('../../../../__init__.py', 'site_scons/site_tools/cxxtestgen/__init__.py')
+test.file_fixture('../../../../about.py', 'site_scons/site_tools/cxxtestgen/about.py')
 
 test.subdir('src')
 
