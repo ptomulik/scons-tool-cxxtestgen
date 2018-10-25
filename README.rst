@@ -122,6 +122,10 @@ The following SCons construction variables might be used to customize the
 |                        | standard SCons search PATH, ``sys.executable``    |
 |                        | (the interpreter running SCons script) is used.   |
 +------------------------+---------------------------------------------------+
+| CXXTESTGENRUNNER       | name of the listener class for cxxtestgen (used   |
+|                        | as ``--runner=$CXXTESTGENRUNNER``); defaults to   |
+|                        | ``ErrorPrinter``.                                 |
++------------------------+---------------------------------------------------+
 | CXXTESTINSTALLDIR      | root directory of custom cxxtest installation;    |
 |                        | defaults to ``#/cxxtest``, where ``#``  is the    |
 |                        | project's top-level directory.                    |

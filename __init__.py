@@ -143,12 +143,13 @@ def generate(env):
 
     env.SetDefault(CXXTESTGENPYTHON=_python(env) or sys.executable)
     env.SetDefault(CXXTESTGEN=cxxtestgen or 'cxxtestgen')
+    env.SetDefault(CXXTESTGENRUNNER='ErrorPrinter')
 
 
     env.SetDefault(CXXTESTGENFLAGS=CLVar())
     env.SetDefault(CXXTESTGENSUFFIX='.t.cpp')
     env.SetDefault(CXXTESTGENSRCSUFFIX='.t.h')
-    env['CXXTESTGENCOM'] = '$CXXTESTGENPYTHON $CXXTESTGEN $CXXTESTGENFLAGS -o $TARGET $SOURCE'
+    env['CXXTESTGENCOM'] = '$CXXTESTGENPYTHON $CXXTESTGEN --runner=$CXXTESTGENRUNNER $CXXTESTGENFLAGS -o $TARGET $SOURCE'
     env['BUILDERS']['CxxTestGen'] = Builder(action='$CXXTESTGENCOM',
                                             suffix='$CXXTESTGENSUFFIX',
                                             src_suffix='$CXXTESTGENSRCSUFFIX')
