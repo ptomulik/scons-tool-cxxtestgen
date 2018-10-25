@@ -8,10 +8,21 @@ import setuptools.command.develop
 import os
 import sys
 
+if sys.version_info < (3,0):
+    from io import open as uopen
+else:
+    uopen = open
+
 here = os.path.abspath(os.path.dirname(__file__))
 
-with open(os.path.join(here, 'README.rst'), encoding='utf-8') as f:
+readme_py = os.path.join(here, 'README.rst')
+with uopen(readme_py, encoding='utf-8') as f:
     readme = f.read()
+
+about = {}
+about_py = os.path.join(here, 'about.py')
+with uopen(about_py, encoding='utf-8') as f:
+    exec(f.read(), about)
 
 class develop(setuptools.command.develop.develop):
 
@@ -20,27 +31,29 @@ class develop(setuptools.command.develop.develop):
         if not os.path.exists(subdir):
             os.makedirs(subdir)
 
-        initpy = os.path.join(subdir, '__init__.py')
-        if not os.path.exists(initpy):
-            os.symlink('../../__init__.py', initpy)
+        init_py = os.path.join(subdir, '__init__.py')
+        if not os.path.exists(init_py):
+            os.symlink('../../__init__.py', init_py)
 
-        readme = os.path.join(subdir, 'README.txt')
-        if not os.path.exists(readme):
-            with open(readme, 'w') as f:
+        about_py = os.path.join(subdir, 'about.py')
+        if not os.path.exists(about_py):
+            os.symlink('../../about.py', about_py)
+
+        readme_txt = os.path.join(subdir, 'README.txt')
+        if not os.path.exists(readme_txt):
+            with open(readme_txt, 'w') as f:
                 f.write('The __init__.py symlink is just a workaround for ' +
                         'broken "pip install -e ."')
 
-        if sys.version_info < (3,0):
-            super(develop, self).run(*args, **kw)
-        else:
-            super().run(*args, **kw)
+        setuptools.command.develop.develop.run(self, *args, **kw)
+
 
 install = setuptools.command.install.install
 
 
 setup(
         name='scons-tool-cxxtestgen',
-        version='0.1.0',
+        version=about['__version__'],
         package_dir={'sconstool.cxxtestgen': '.'},
         packages=['sconstool.cxxtestgen'],
         namespace_packages=['sconstool'],

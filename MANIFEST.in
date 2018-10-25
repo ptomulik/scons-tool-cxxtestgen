@@ -8,3 +8,4 @@ prune ./test
 prune ./build
 prune ./dist
 prune ./scons-tool-*
+prune ./sconstool

@@ -6,45 +6,6 @@ Tool-specific initialization for cxxtestgen.
 There normally shouldn't be any need to import this module directly.
 It will usually be imported through the generic SCons.Tool.Tool()
 selection method.
-
-Variables Defined
------------------
-
-+------------------------+---------------------------------------------------+
-|        Name            |                      Description                  |
-+========================+---------------------------------------------------+
-| CXXTESTGEN             | cxxtestgen executable                             |
-+------------------------+---------------------------------------------------+
-| CXXTESTBINPATH         | additional search path for cxxtest executables    |
-+------------------------+---------------------------------------------------+
-| CXXTESTGENFLAGS        | additional flags to be passed to cxxtestgen       |
-+------------------------+---------------------------------------------------+
-| CXXTESTGENSUFFIX       |                                                   |
-+------------------------+---------------------------------------------------+
-| CXXTESTGENSRCSUFFIX    |                                                   |
-+------------------------+---------------------------------------------------+
-|                        |                                                   |
-+------------------------+---------------------------------------------------+
-
-Variables Used
---------------
-
-+------------------------+---------------------------------------------------+
-|        Name            |                      Description                  |
-+========================+---------------------------------------------------+
-| CXXTESTBINPATH         | additional search path for cxxtest executables    |
-+------------------------+---------------------------------------------------+
-| CXXTESTGENFLAGS        | additional flags to be passed to cxxtestgen       |
-+------------------------+---------------------------------------------------+
-|                        |                                                   |
-+------------------------+---------------------------------------------------+
-|                        |                                                   |
-+------------------------+---------------------------------------------------+
-|                        |                                                   |
-+------------------------+---------------------------------------------------+
-|                        |                                                   |
-+------------------------+---------------------------------------------------+
-
 """
 
 #
@@ -70,6 +31,8 @@ Variables Used
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
+from .about import __version__
+
 from sconstool.util import ToolFinder
 from SCons.Builder import Builder
 from SCons.Util import CLVar
@@ -77,17 +40,31 @@ import sys
 import os
 import re
 
+
 class _CxxTestGenFinder(ToolFinder):
+    _binpath = os.path.pathsep.join([
+        os.path.join('$CXXTESTINSTALLDIR', 'bin'),
+        os.path.join('$CXXTESTINSTALLDIR', 'python', 'python3', 'scripts'),
+        os.path.join('$CXXTESTINSTALLDIR', 'python', 'scripts')
+    ])
+
+    @property
+    def priority_path(self):
+        # Change the default value of priority_path
+        return self._kw.get('priority_path', '$CXXTESTBINPATH')
+
     @property
     def strip_path(self):
-        # Change the default behavior
+        # Change the default value of strip_path
         return self._kw.get('strip_path', False)
 
     def __call__(self, env):
-        if sys.version_info < (3,0):
-            ret = super(_CxxTestGenFinder, self).__call__(env)
-        else:
-            ret = super().__call__(env)
+        # Put it here, so 'exists' and 'generate' should get same results
+        env.SetDefault(CXXTESTINSTALLDIR=env.Dir('#/cxxtest').get_abspath())
+        env.SetDefault(CXXTESTBINPATH=self._binpath)
+
+        ret = ToolFinder.__call__(self, env)
+
         if isinstance(ret, str):
             if sys.platform == 'win32' and ret.lower().endswith('.bat'):
                 # Ironically, on Windows we shall avoid 'cxxtestgen.bat'.
@@ -117,10 +94,10 @@ class _CxxTestGenFinder(ToolFinder):
                 content = f.read()
         except IOError:
             return False
-        return bool(re.search(r'^\s*\bcxxtest\.main\b\s*\(', content, re.M))
+        return bool(re.search(r'\bcxxtest(?:gen)?\.main\s*\(', content, re.M))
 
 
-_cxxtestgen = _CxxTestGenFinder('cxxtestgen', priority_path='$CXXTESTBINPATH')
+_cxxtestgen = _CxxTestGenFinder('cxxtestgen')
 
 
 def _has_issue_135(script):
@@ -156,9 +133,6 @@ def _shall_work_on_py3(cxxtestgen):
     return not _has_issue_135(cxxtestgen) and _has_py3_impl(cxxtestgen)
 
 def generate(env):
-    env.SetDefault(CXXTESTINSTALLDIR='cxxtest')
-    env.SetDefault(CXXTESTBINPATH=['$CXXTESTINSTALLDIR/bin'])
-
     cxxtestgen = _cxxtestgen(env)
 
     if cxxtestgen:
@@ -167,14 +141,14 @@ def generate(env):
         else:
             _python = ToolFinder('python', name=['python2', 'python'])
 
-    env.SetDefault(CXXTESTPYTHON=_python(env) or sys.executable)
+    env.SetDefault(CXXTESTGENPYTHON=_python(env) or sys.executable)
     env.SetDefault(CXXTESTGEN=cxxtestgen or 'cxxtestgen')
 
 
     env.SetDefault(CXXTESTGENFLAGS=CLVar())
     env.SetDefault(CXXTESTGENSUFFIX='.t.cpp')
     env.SetDefault(CXXTESTGENSRCSUFFIX='.t.h')
-    env['CXXTESTGENCOM'] = '$CXXTESTPYTHON $CXXTESTGEN -o $TARGET $CXXTESTGENFLAGS $SOURCE'
+    env['CXXTESTGENCOM'] = '$CXXTESTGENPYTHON $CXXTESTGEN $CXXTESTGENFLAGS -o $TARGET $SOURCE'
     env['BUILDERS']['CxxTestGen'] = Builder(action='$CXXTESTGENCOM',
                                             suffix='$CXXTESTGENSUFFIX',
                                             src_suffix='$CXXTESTGENSRCSUFFIX')

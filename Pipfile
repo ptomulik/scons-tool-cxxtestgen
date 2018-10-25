@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-scons-tool-util = ">=0.1.5"
+scons-tool-util = ">=0.1.6"
 
 [dev-packages]
 scons = ">=3.0.1"

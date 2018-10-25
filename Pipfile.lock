@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "858e7abd485f3c42ecf4dd842022e6bea8a72bae9215c7a55cbddea655f2d5f1"
+            "sha256": "bad41779df53b8628b90065d4afa65af317cac661adda065200615c2f440f5fa"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -18,11 +18,11 @@
     "default": {
         "scons-tool-util": {
             "hashes": [
-                "sha256:c2c70e9e205039c3c2953b212fb7b8a37d769126550408f4c8e823784fccf72c",
-                "sha256:ed09d97ecec7e92c40950df394f574d00951988828cf456a1d441e5e7832267e"
+                "sha256:41f0bf17d095634272c03ea4ab68ecc0896411cf613c2ce17d445394361b0b0c",
+                "sha256:d0c8970a1ff50ab2017b4fb69955071cb3b3c31134b70a1f4b235a9fc19db3a3"
             ],
             "index": "pypi",
-            "version": "==0.1.5"
+            "version": "==0.1.6"
         }
     },
     "develop": {

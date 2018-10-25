@@ -101,6 +101,48 @@ Usage example
 
       scons
 
+Construction variables used
+---------------------------
+
+The following SCons construction variables might be used to customize the
+**cxxtestgen** tool.
+
++------------------------+---------------------------------------------------+
+|        Name            |                      Description                  |
++========================+===================================================+
+| CXXTESTGEN             | path to cxxtestgen python script; by default it   |
+|                        | will contain a result of search, first in         |
+|                        | ``$CXXTESTBINPATH``, then in SCons ``PATH``.      |
++------------------------+---------------------------------------------------+
+| CXXTESTGENPYTHON       | python interpreter to be used to run cxxtestgen;  |
+|                        | by default it is being chosen automatically;      |
+|                        | python3 is preferred, but if the cxxtestgen seems |
+|                        | to not support it, python2 is picked up; if       |
+|                        | neither python3 nor python2 are available in      |
+|                        | standard SCons search PATH, ``sys.executable``    |
+|                        | (the interpreter running SCons script) is used.   |
++------------------------+---------------------------------------------------+
+| CXXTESTINSTALLDIR      | root directory of custom cxxtest installation;    |
+|                        | defaults to ``#/cxxtest``, where ``#``  is the    |
+|                        | project's top-level directory.                    |
++------------------------+---------------------------------------------------+
+| CXXTESTBINPATH         | search path for cxxtest executables/scripts; by   |
+|                        | default it includes the following locations:      |
+|                        |                                                   |
+|                        | - ``$CXXTESTINSTALLDIR/bin``,                     |
+|                        | - ``$CXXTESTINSTALLDIR/python/python3/scripts``,  |
+|                        | - ``$CXXTESTINSTALLDIR/python/scripts``,          |
+|                        |                                                   |
+|                        | in that order.                                    |
++------------------------+---------------------------------------------------+
+| CXXTESTGENFLAGS        | additional flags to be passed to cxxtestgen.      |
++------------------------+---------------------------------------------------+
+| CXXTESTGENSUFFIX       | suffix for files produced by cxxtestgen (.t.cpp). |
++------------------------+---------------------------------------------------+
+| CXXTESTGENSRCSUFFIX    | suffix of cxxtestgen's input files (.t.h).        |
++------------------------+---------------------------------------------------+
+
+
 LICENSE
 -------
 

@@ -65,6 +65,9 @@ test.run()
 test.must_exist('MyTestSuite1.t.cpp')
 test.must_contain('MyTestSuite1.t.cpp', 'CXXTEST')
 
+test.run(['-c'])
+test.must_not_exist('MyTestSuite1.t.cpp')
+
 test.pass_test()
 
 # Local Variables:
