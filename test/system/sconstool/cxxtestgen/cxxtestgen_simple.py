@@ -41,6 +41,7 @@ except OSError:
 
 test.file_fixture('../../../../__init__.py', 'site_scons/site_tools/cxxtestgen/__init__.py')
 test.file_fixture('../../../../about.py', 'site_scons/site_tools/cxxtestgen/about.py')
+test.file_fixture('../../../../detail_.py', 'site_scons/site_tools/cxxtestgen/detail_.py')
 
 test.write('SConstruct', """
 env = Environment(tools=['cxxtestgen'])

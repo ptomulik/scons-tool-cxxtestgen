@@ -23,6 +23,10 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
+"""
+Ensure that the tool does not blow up if there is no cxxtestgen script in path.
+"""
+
 import TestSCons
 import sys
 import os
@@ -43,39 +47,16 @@ test.file_fixture('../../../../__init__.py', 'site_scons/site_tools/cxxtestgen/_
 test.file_fixture('../../../../about.py', 'site_scons/site_tools/cxxtestgen/about.py')
 test.file_fixture('../../../../detail_.py', 'site_scons/site_tools/cxxtestgen/detail_.py')
 
-test.subdir('src')
-
-test.write('SConstruct', r"""\
-env = Environment(tools=['cxxtestgen'])
-SConscript('src/SConscript', variant_dir='build', src_dir='src', duplicate=0, exports={'env': env})
-""")
-
-test.write(['src', 'SConscript'], r"""
-Import('env')
-env.CxxTestGen('MyTestSuite')
-""")
-
-test.write(['src', 'MyTestSuite.t.h'], r"""\
-// MyTestSuite.t.h
-#include <cxxtest/TestSuite.h>
-class MyTestSuite : public CxxTest::TestSuite
-{
-public:
-void testAddition(void)
-{
-  TS_ASSERT(1 + 1 > 1);
-  TS_ASSERT_EQUALS(1 + 1, 2);
-}
-};
+test.write('SConstruct', """
+env = Environment(tools=['cxxtestgen'], ENV={'PATH': ''}, CXXTESTBINPATH='')
+print("$CXXTESTGEN: %r" % env.subst("$CXXTESTGEN"))
+print("$CXXTESTGENPYTHON: %r" % env.subst("$CXXTESTGENPYTHON"))
 """)
 
 test.run()
 
-test.must_exist('build/MyTestSuite.t.cpp')
-test.must_contain('build/MyTestSuite.t.cpp', 'CXXTEST')
-
-test.run(['-c'])
-test.must_not_exist('build/MyTestSuite.t.cpp')
+test.must_contain_all_lines(test.stdout(), [("$CXXTESTGEN: %r" % 'cxxtestgen'),
+                                            ("$CXXTESTGENPYTHON: %r" % sys.executable)])
 
 test.pass_test()
 

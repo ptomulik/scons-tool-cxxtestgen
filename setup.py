@@ -25,26 +25,25 @@ with uopen(about_py, encoding='utf-8') as f:
     exec(f.read(), about)
 
 class develop(setuptools.command.develop.develop):
-
-    def run(self, *args, **kw):
+    def _make_symlinks(self, sources):
+        here = os.path.abspath(os.path.dirname(__file__))
         subdir = os.path.join(here, 'sconstool', 'cxxtestgen')
+        reldir = os.path.join(os.path.pardir, os.path.pardir)
         if not os.path.exists(subdir):
             os.makedirs(subdir)
-
-        init_py = os.path.join(subdir, '__init__.py')
-        if not os.path.exists(init_py):
-            os.symlink('../../__init__.py', init_py)
-
-        about_py = os.path.join(subdir, 'about.py')
-        if not os.path.exists(about_py):
-            os.symlink('../../about.py', about_py)
-
+        for source in sources:
+            fullsrc = os.path.join(subdir, source)
+            if not os.path.exists(fullsrc):
+                target = os.path.join(reldir, source)
+                os.symlink(target, fullsrc)
         readme_txt = os.path.join(subdir, 'README.txt')
         if not os.path.exists(readme_txt):
             with open(readme_txt, 'w') as f:
-                f.write('The __init__.py symlink is just a workaround for ' +
+                f.write('This directory contains symlinks to workaround ' +
                         'broken "pip install -e ."')
 
+    def run(self, *args, **kw):
+        self._make_symlinks(['__init__.py', 'about.py'])
         setuptools.command.develop.develop.run(self, *args, **kw)
 
 
