@@ -32,12 +32,13 @@ import os
 import re
 
 try:
-    from site_tools.util import ToolFinder
+    from site_tools.util import ToolFinder, Selector
 except ImportError:
-    from sconstool.util import ToolFinder
+    from sconstool.util import ToolFinder, Selector
 
 
 __all__ = ('ToolFinder',
+           'Selector',
            'findCxxTestGen',
            'findCxxTestGenPython',
            'shallWorkOnPy3')

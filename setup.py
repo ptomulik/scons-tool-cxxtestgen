@@ -21,7 +21,7 @@ with uopen(readme_rst, encoding='utf-8') as f:
 
 about = {}
 about_py = os.path.join(here, 'about.py')
-with uopen(about_py, encoding='utf-8') as f:
+with open(about_py) as f:
     exec(f.read(), about)
 
 class develop(setuptools.command.develop.develop):
@@ -63,7 +63,7 @@ setup(
         author='Paweł Tomulik',
         author_email='ptomulik@meil.pw.edu.pl',
         cmdclass={'develop': develop, 'install': install},
-        install_requires=['scons-tool-util >= 0.1.6'],
+        install_requires=['scons-tool-util >= 0.1.8'],
         python_requires=">=2.7"
 )
 

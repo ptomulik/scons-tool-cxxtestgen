@@ -36,7 +36,9 @@ from .detail_ import *
 
 import SCons.Builder
 import SCons.Util
+import SCons.Tool
 import sys
+import os
 
 defaultCxxTestGenCom = '$CXXTESTGENPYTHON $CXXTESTGEN --runner=$CXXTESTGENRUNNER $CXXTESTGENFLAGS -o $TARGET $SOURCE'
 
@@ -45,8 +47,9 @@ def createCxxTestGenBuilder(env):
         builder = env['BUILDERS']['CxxTestGen']
     except KeyError:
         builder = SCons.Builder.Builder(action='$CXXTESTGENCOM',
-                                        suffix='$CXXTESTGENSUFFIX',
-                                        src_suffix='$CXXTESTGENSRCSUFFIX')
+                                        emitter={},
+                                        suffix={None: '$CXXTESTGENSUFFIX'},
+                                        src_suffix=['$CXXTESTGENSRCSUFFIX'])
         env['BUILDERS']['CxxTestGen'] = builder
     return builder
 
@@ -63,8 +66,16 @@ def setCxxTestGenDefaults(env):
     env.SetDefault(CXXTESTGENCOM=defaultCxxTestGenCom)
 
 
+def extendCXXFileBuilder(env):
+    _, cxx = SCons.Tool.createCFileBuilders(env)
+    cxx.add_action('.t.h', '$CXXTESTGENCOM')
+    cxx.set_suffix(Selector(cxx.suffix))
+    cxx.suffix['$CXXTESTGENSRCSUFFIX'] = '$CXXTESTGENSUFFIX'
+
+
 def generate(env):
     createCxxTestGenBuilder(env)
+    extendCXXFileBuilder(env)
     setCxxTestGenDefaults(env)
 
 
