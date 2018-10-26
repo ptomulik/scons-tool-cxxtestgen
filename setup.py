@@ -43,7 +43,7 @@ class develop(setuptools.command.develop.develop):
                         'broken "pip install -e ."')
 
     def run(self, *args, **kw):
-        self._make_symlinks(['__init__.py', 'about.py'])
+        self._make_symlinks(['__init__.py', 'about.py', 'detail_.py'])
         setuptools.command.develop.develop.run(self, *args, **kw)
 
 
