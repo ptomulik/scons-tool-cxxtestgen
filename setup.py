@@ -28,13 +28,13 @@ class develop(setuptools.command.develop.develop):
     def _make_symlinks(self, sources):
         here = os.path.abspath(os.path.dirname(__file__))
         subdir = os.path.join(here, 'sconstool', 'cxxtestgen')
-        reldir = os.path.join(os.path.pardir, os.path.pardir)
+        relpath = os.path.relpath(here, subdir)
         if not os.path.exists(subdir):
             os.makedirs(subdir)
         for source in sources:
             fullsrc = os.path.join(subdir, source)
             if not os.path.exists(fullsrc):
-                target = os.path.join(reldir, source)
+                target = os.path.join(relpath, source)
                 os.symlink(target, fullsrc)
         readme_txt = os.path.join(subdir, 'README.txt')
         if not os.path.exists(readme_txt):
