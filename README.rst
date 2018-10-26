@@ -65,6 +65,15 @@ As a git submodule
 
       git submodule add git://github.com/ptomulik/scons-tool-cxxtestgen.git site_scons/site_tools/cxxtestgen
 
+#. For python 2.x, create ``__init__.py`` in ``site_tools`` directory:
+
+   .. code-block:: shell
+
+      touch site_scons/site_tools/__init__.py
+
+   this will allow to directly import ``site_tools.cxxtestgen`` (this may be
+   required by other tools).
+
 Usage example
 -------------
 
