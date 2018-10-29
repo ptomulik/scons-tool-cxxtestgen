@@ -40,7 +40,7 @@ import SCons.Tool
 import sys
 import os
 
-defaultCxxTestGenCom = '$CXXTESTGENPYTHON $CXXTESTGEN --runner=$CXXTESTGENRUNNER $CXXTESTGENFLAGS -o $TARGET $SOURCE'
+defaultCxxTestGenCom = '$CXXTESTGENPYTHON $CXXTESTGEN --runner=$CXXTESTGENRUNNER $CXXTESTGENFLAGS -o $TARGET $SOURCES'
 
 def createCxxTestGenBuilder(env):
     try:
