@@ -40,7 +40,7 @@ import SCons.Tool
 import sys
 import os
 
-defaultCxxTestGenCom = '$CXXTESTGENPYTHON $CXXTESTGEN --runner=$CXXTESTGENRUNNER $CXXTESTGENFLAGS -o $TARGET $SOURCES'
+defaultCxxTestGenCom = '$CXXTESTGENPYTHON $CXXTESTGEN $_CXXTESTGENRUNNER $CXXTESTGENFLAGS -o $TARGET $SOURCES'
 
 def createCxxTestGenBuilder(env):
     try:
@@ -64,6 +64,7 @@ def setCxxTestGenDefaults(env):
     env.SetDefault(CXXTESTGENSUFFIX='.t.cpp')
     env.SetDefault(CXXTESTGENSRCSUFFIX='.t.h')
     env.SetDefault(CXXTESTGENCOM=defaultCxxTestGenCom)
+    env.SetDefault(_CXXTESTGENRUNNER='${_concat("--runner=",CXXTESTGENRUNNER,"",__env__)}')
 
 
 def extendCXXFileBuilder(env):
