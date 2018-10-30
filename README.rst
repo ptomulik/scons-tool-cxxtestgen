@@ -110,6 +110,17 @@ Usage example
 
       scons
 
+Builders
+--------
+
+- ``CxxTestGen([target], sources, **kw)`` - invokes ``cxxtestgetn ...``.
+- ``CxxTestGenPart([target], sources, **kw)`` - invokes ``cxxtestgen --part ...``,
+  this is used to generate ``*.t.cpp`` files which define tests but have no
+  ``main()``.
+- ``CxxTestGenRoot(target, **kw)`` - invokes ``cxxtestgen --root ...``, this
+  pseudo-builder generates the root ``*.t.cpp`` file that provides the
+  ``main()`` function, should be used in pair with ``CxxTestGenPart``.
+
 Construction variables used
 ---------------------------
 
@@ -119,9 +130,20 @@ The following SCons construction variables might be used to customize the
 +------------------------+---------------------------------------------------+
 |        Name            |                      Description                  |
 +========================+===================================================+
+| CXXTESTBINPATH         | search path for cxxtest executables/scripts; by   |
+|                        | default it includes the following locations:      |
+|                        |                                                   |
+|                        | - ``$CXXTESTINSTALLDIR/bin``,                     |
+|                        | - ``$CXXTESTINSTALLDIR/python/python3/scripts``,  |
+|                        | - ``$CXXTESTINSTALLDIR/python/scripts``,          |
+|                        |                                                   |
+|                        | in that order.                                    |
++------------------------+---------------------------------------------------+
 | CXXTESTGEN             | path to cxxtestgen python script; by default it   |
 |                        | will contain a result of search, first in         |
 |                        | ``$CXXTESTBINPATH``, then in SCons ``PATH``.      |
++------------------------+---------------------------------------------------+
+| CXXTESTGENFLAGS        | additional flags to be passed to cxxtestgen.      |
 +------------------------+---------------------------------------------------+
 | CXXTESTGENPYTHON       | python interpreter to be used to run cxxtestgen;  |
 |                        | by default it is being chosen automatically;      |
@@ -135,24 +157,13 @@ The following SCons construction variables might be used to customize the
 |                        | as ``--runner=$CXXTESTGENRUNNER``); defaults to   |
 |                        | ``ErrorPrinter``.                                 |
 +------------------------+---------------------------------------------------+
-| CXXTESTINSTALLDIR      | root directory of custom cxxtest installation;    |
-|                        | defaults to ``#/cxxtest``, where ``#``  is the    |
-|                        | project's top-level directory.                    |
-+------------------------+---------------------------------------------------+
-| CXXTESTBINPATH         | search path for cxxtest executables/scripts; by   |
-|                        | default it includes the following locations:      |
-|                        |                                                   |
-|                        | - ``$CXXTESTINSTALLDIR/bin``,                     |
-|                        | - ``$CXXTESTINSTALLDIR/python/python3/scripts``,  |
-|                        | - ``$CXXTESTINSTALLDIR/python/scripts``,          |
-|                        |                                                   |
-|                        | in that order.                                    |
-+------------------------+---------------------------------------------------+
-| CXXTESTGENFLAGS        | additional flags to be passed to cxxtestgen.      |
-+------------------------+---------------------------------------------------+
 | CXXTESTGENSUFFIX       | suffix for files produced by cxxtestgen (.t.cpp). |
 +------------------------+---------------------------------------------------+
 | CXXTESTGENSRCSUFFIX    | suffix of cxxtestgen's input files (.t.h).        |
++------------------------+---------------------------------------------------+
+| CXXTESTINSTALLDIR      | root directory of custom cxxtest installation;    |
+|                        | defaults to ``#/cxxtest``, where ``#``  is the    |
+|                        | project's top-level directory.                    |
 +------------------------+---------------------------------------------------+
 
 

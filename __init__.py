@@ -35,23 +35,58 @@ from .about import __version__
 from .detail_ import *
 
 import SCons.Builder
+import SCons.Action
 import SCons.Util
 import SCons.Tool
 import sys
 import os
 
-defaultCxxTestGenCom = '$CXXTESTGENPYTHON $CXXTESTGEN $_CXXTESTGENRUNNER $CXXTESTGENFLAGS -o $TARGET $SOURCES'
+cxxTestGenCom = '$CXXTESTGENPYTHON $CXXTESTGEN $_CXXTESTGENFLAGS -o $TARGET $SOURCES'
+cxxTestGenRootCom = '$CXXTESTGENPYTHON $CXXTESTGEN --root $_CXXTESTGENFLAGS -o $TARGET'
+cxxTestGenPartCom = '$CXXTESTGENPYTHON $CXXTESTGEN --part $_CXXTESTGENFLAGS -o $TARGET $SOURCES'
+cxxTestGenAction = SCons.Action.Action('$CXXTESTGENCOM', '$CXXTESTGENCOMSTR')
+cxxTestGenRootAction = SCons.Action.Action('$CXXTESTGENROOTCOM', '$CXXTESTGENROOTCOMSTR')
+cxxTestGenPartAction = SCons.Action.Action('$CXXTESTGENPARTCOM', '$CXXTESTGENPARTCOMSTR')
 
 def createCxxTestGenBuilder(env):
     try:
         builder = env['BUILDERS']['CxxTestGen']
     except KeyError:
-        builder = SCons.Builder.Builder(action='$CXXTESTGENCOM',
+        builder = SCons.Builder.Builder(action=cxxTestGenAction,
                                         emitter={},
                                         suffix={None: '$CXXTESTGENSUFFIX'},
                                         src_suffix=['$CXXTESTGENSRCSUFFIX'])
         env['BUILDERS']['CxxTestGen'] = builder
     return builder
+
+def createCxxTestGenRootBuilder(env):
+    try:
+        builder = env['BUILDERS']['_CxxTestGenRoot']
+    except KeyError:
+        builder = SCons.Builder.Builder(action=cxxTestGenRootAction,
+                                        emitter={},
+                                        suffix={None: '$CXXTESTGENSUFFIX'})
+        env['BUILDERS']['_CxxTestGenRoot'] = builder
+    try:
+        env.CxxTestGenRoot
+    except AttributeError:
+        env.AddMethod(_CxxTestGenRootWrapper, 'CxxTestGenRoot')
+    return builder
+
+def createCxxTestGenPartBuilder(env):
+    try:
+        builder = env['BUILDERS']['CxxTestGenPart']
+    except KeyError:
+        builder = SCons.Builder.Builder(action=cxxTestGenPartAction,
+                                        emitter={},
+                                        suffix={None: '$CXXTESTGENSUFFIX'},
+                                        src_suffix=['$CXXTESTGENSRCSUFFIX'])
+        env['BUILDERS']['CxxTestGenPart'] = builder
+    return builder
+
+def _CxxTestGenRootWrapper(env, target, **kw):
+    return env._CxxTestGenRoot(target, [], **kw)
+
 
 def setCxxTestGenDefaults(env):
     cxxtestgen = findCxxTestGen(env)
@@ -63,8 +98,12 @@ def setCxxTestGenDefaults(env):
     env.SetDefault(CXXTESTGENFLAGS=SCons.Util.CLVar())
     env.SetDefault(CXXTESTGENSUFFIX='.t.cpp')
     env.SetDefault(CXXTESTGENSRCSUFFIX='.t.h')
-    env.SetDefault(CXXTESTGENCOM=defaultCxxTestGenCom)
-    env.SetDefault(_CXXTESTGENRUNNER='${_concat("--runner=",CXXTESTGENRUNNER,"",__env__)}')
+    env.SetDefault(CXXTESTGENCOM=cxxTestGenCom, CXXTESTGENCOMSTR='$CXXTESTGENCOM')
+    env.SetDefault(CXXTESTGENROOTCOM=cxxTestGenRootCom, CXXTESTGENROOTCOMSTR='$CXXTESTGENROOTCOM')
+    env.SetDefault(CXXTESTGENPARTCOM=cxxTestGenPartCom, CXXTESTGENPARTCOMSTR='$CXXTESTGENPARTCOM')
+    env['_CXXTESTGENRUNNER'] = '${_concat("--runner=",CXXTESTGENRUNNER,"",__env__)}'
+    env['_CXXTESTGENFLAGS'] = SCons.Util.CLVar(['$_CXXTESTGENRUNNER', '$CXXTESTGENFLAGS'])
+
 
 
 def extendCXXFileBuilder(env):
@@ -76,6 +115,8 @@ def extendCXXFileBuilder(env):
 
 def generate(env):
     createCxxTestGenBuilder(env)
+    createCxxTestGenRootBuilder(env)
+    createCxxTestGenPartBuilder(env)
     extendCXXFileBuilder(env)
     setCxxTestGenDefaults(env)
 
